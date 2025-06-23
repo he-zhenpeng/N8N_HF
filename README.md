@@ -1,5 +1,5 @@
 ---
-title: 8n
+title: N8n
 emoji: 🏃
 colorFrom: yellow
 colorTo: purple
