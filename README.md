@@ -25,7 +25,8 @@ WEBHOOK_URL=https://用户名-space名.hf.space/    !!!!!不要漏了最后的�
 Space secrets(Private)说明:   
 N8N_ENCRYPTION_KEY:  加密密钥【需要保存，如不保存以后重置数据无法恢复】   
 RCLONE_CONF:rclone配置内容，可选，用来同步数据  
-ADMIN_PASSWORD:Code Server登陆密码    
+ADMIN_PASSWORD:Code Server登陆密码
+RCLONE_FOLDER:RCLONE配置文件夹
 
 同步配置目录命令   
 
