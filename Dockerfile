@@ -1,4 +1,4 @@
-FROM node:18-alpine
+FROM node:24.5.0-alpine
 
 # Set user to root for installation
 USER root
