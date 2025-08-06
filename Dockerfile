@@ -24,7 +24,9 @@ COPY --from=nodebuilder /usr/local/bin/npm /usr/local/bin/
 COPY --from=nodebuilder /usr/local/bin/n8n /usr/local/bin/n8n
 COPY --from=rclone /usr/local/bin/rclone /usr/bin/rclone
 
-RUN ln -s /usr/local/lib/node_modules/npm/bin/npm-cli.js /usr/local/bin/npm
+# 推荐将 node 所有文件完整复制（包含 npm）
+COPY --from=nodebuilder /usr/local /usr/local
+# RUN ln -s /usr/local/lib/node_modules/npm/bin/npm-cli.js /usr/local/bin/npm
 
 # 安装 code-server
 RUN curl -fsSL https://code-server.dev/install.sh | sh -s -- --version=4.23.0-rc.2
