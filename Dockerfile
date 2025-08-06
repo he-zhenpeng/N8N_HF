@@ -1,53 +1,68 @@
-# Stage 1: Node builder
-FROM node:22-slim as nodebuilder
+FROM node:18-alpine
 
-RUN npm install -g pnpm pm2 n8n
+# Set user to root for installation
+USER root
 
-# Stage 2: rclone
-FROM rclone/rclone:latest as rclone
+# Arguments that can be passed at build time
+ARG N8N_PATH=/usr/local/lib/node_modules/n8n
+ARG BASE_PATH=/root/.n8n
+ARG DATABASE_PATH=$BASE_PATH/database
+ARG CONFIG_PATH=$BASE_PATH/config
+ARG WORKFLOWS_PATH=$BASE_PATH/workflows
+ARG LOGS_PATH=$BASE_PATH/logs
+ARG N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS=$N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS
+ARG N8N_HOST=$N8N_HOST
+ARG N8N_PORT=$N8N_PORT
+ARG N8N_PROTOCOL=https
+ARG N8N_EDITOR_BASE_URL=$N8N_EDITOR_BASE_URL
+ARG WEBHOOK_URL=$WEBHOOK_URL
+ARG GENERIC_TIMEZONE=$GENERIC_TIMEZONE
+ARG TZ=$TZ
+ARG N8N_ENCRYPTION_KEY=$N8N_ENCRYPTION_KEY
+ARG N8N_ENCRYPTION_KEY=$N8N_ENCRYPTION_KEY
+ARG RCLONE_CONF=$RCLONE_CONF
 
-# Stage 3: Final image
-FROM python:3.13-slim-bullseye
+# Install system dependencies
+RUN apk add --no-cache \
+    git \
+    python3 \
+    py3-pip \
+    make \
+    g++ \
+    build-base \
+    cairo-dev \
+    pango-dev \
+    chromium \
+    rclone 
 
-ENV DEBIAN_FRONTEND=noninteractive
+# Set environment variables
+ENV PUPPETEER_SKIP_DOWNLOAD=true
+ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 
-# 仅安装必要依赖
-RUN apt-get update && apt-get install -y \
-    curl zsh git sudo unzip tzdata openssl nginx jq \
-    netcat sshpass procps wget ca-certificates \
-    && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# 拷贝 node 工具和 rclone
-COPY --from=nodebuilder /usr/local/bin/node /usr/local/bin/
-COPY --from=nodebuilder /usr/local/lib/node_modules /usr/local/lib/node_modules
-COPY --from=nodebuilder /usr/local/bin/npm /usr/local/bin/
-COPY --from=nodebuilder /usr/local/bin/n8n /usr/local/bin/n8n
-COPY --from=rclone /usr/local/bin/rclone /usr/bin/rclone
 
-# 推荐将 node 所有文件完整复制（包含 npm）
-COPY --from=nodebuilder /usr/local /usr/local
-# RUN ln -s /usr/local/lib/node_modules/npm/bin/npm-cli.js /usr/local/bin/npm
+# Install n8n globally
+RUN npm install -g n8n@1.86.1
 
-# 安装 code-server
-RUN curl -fsSL https://code-server.dev/install.sh | sh -s -- --version=4.23.0-rc.2
+# Create necessary directories
+RUN mkdir -p $DATABASE_PATH $CONFIG_PATH $WORKFLOWS_PATH $LOGS_PATH \
+    && chmod -R 777 $BASE_PATH
 
-# 创建 coder 用户
-RUN useradd -m -s /bin/zsh coder && echo 'coder ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
+RUN mkdir -p /home/node/.config/rclone && chmod -R 777 /home/node/.config/rclone
 
-USER coder
-ENV HOME=/home/coder \
-    PATH=/home/coder/.local/bin:$PATH
+COPY entrypoint.sh /entrypoint.sh
 
-COPY --chown=coder start_server.sh $HOME
-COPY --chown=coder apps.conf $HOME
-COPY --chown=coder nginx.conf $HOME
+RUN chmod 777 /entrypoint.sh
 
-RUN chmod +x $HOME/start_server.sh && \
-    mkdir -p $HOME/.local/share/code-server/User && \
-    echo '{ "workbench.colorTheme": "Default Dark Modern" }' > $HOME/.local/share/code-server/User/settings.json
+# 创建rclone配置文件
+RUN rclone config -h
 
-WORKDIR /home/coder
+# Set working directory
+WORKDIR /data
 
-EXPOSE 5700
 
-CMD ["sh", "-c", "/home/coder/start_server.sh"]
+CMD ["/entrypoint.sh"]
+
+# Start n8n
+
+# CMD ["n8n", "start"]
