@@ -42,7 +42,7 @@ ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 
 
 # Install n8n globally
-RUN npm install -g n8n@1.86.1
+RUN npm install -g n8n
 
 # Create necessary directories
 RUN mkdir -p $DATABASE_PATH $CONFIG_PATH $WORKFLOWS_PATH $LOGS_PATH \
