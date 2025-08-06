@@ -1,4 +1,4 @@
-name: Build and Push n8n Custom Image
+name: Build and Push n8n Image To DockerHub
 
 on:
   workflow_dispatch:
