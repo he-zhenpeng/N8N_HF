@@ -7,8 +7,9 @@ sdk: docker
 pinned: false
 app_port: 5700
 ---
-
-
+```
+docker run -d --name n8n --net host -v /home/node/.n8n:/home/node/.n8n -e RCLONE_FOLDER=onedrive:/n8n -e GENERIC_TIMEZONE=Asia/Shanghai -e TZ=Asia/Shanghai -e N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS=true -e WEBHOOK_URL=http://skyler/ -e RCLONE_CONF=*** -e ADMIN_PASSWORD=*** -e N8N_ENCRYPTION_KEY=*** -e N8N_SECURE_COOKIE=false skylerhe/n8n:latest
+```
 ## 以Code Serer为核心的用nginx做为反代来部署多个服务
 目前已经添加服务   
 n8n地址:/   
