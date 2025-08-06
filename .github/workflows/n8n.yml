@@ -35,7 +35,7 @@ jobs:
           context: ./
           push: true
           tags: |
-            ghcr.io/${{ steps.lower-repo.outputs.repository }}/n8n:latest
+            ghcr.io/${{ steps.lower-repo.outputs.repository }}:latest
           labels: |
             org.opencontainers.image.source=https://github.com/${{ github.repository }}
             org.opencontainers.image.description=N8n Docker Image
