@@ -32,7 +32,7 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
-          context: ./Base
+          context: ./
           push: true
           tags: |
             ghcr.io/${{ steps.lower-repo.outputs.repository }}/n8n:latest
