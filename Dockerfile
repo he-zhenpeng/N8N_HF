@@ -23,7 +23,8 @@ ARG N8N_ENCRYPTION_KEY=$N8N_ENCRYPTION_KEY
 ARG RCLONE_CONF=$RCLONE_CONF
 
 # Install system dependencies
-RUN apk add --no-cache \
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
     git \
     python3 \
     py3-pip \
@@ -33,7 +34,9 @@ RUN apk add --no-cache \
     cairo-dev \
     pango-dev \
     chromium \
-    rclone 
+    rclone && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
 # Set environment variables
 ENV PUPPETEER_SKIP_DOWNLOAD=true
