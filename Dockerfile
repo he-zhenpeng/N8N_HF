@@ -1,4 +1,4 @@
-FROM node:lts-slim
+FROM node:18-alpine
 
 # Set user to root for installation
 USER root
@@ -23,8 +23,7 @@ ARG N8N_ENCRYPTION_KEY=$N8N_ENCRYPTION_KEY
 ARG RCLONE_CONF=$RCLONE_CONF
 
 # Install system dependencies
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
+RUN apk add --no-cache \
     git \
     python3 \
     py3-pip \
@@ -34,9 +33,7 @@ RUN apt-get update && \
     cairo-dev \
     pango-dev \
     chromium \
-    rclone && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
+    rclone
 
 # Set environment variables
 ENV PUPPETEER_SKIP_DOWNLOAD=true
