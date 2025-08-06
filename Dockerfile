@@ -1,4 +1,4 @@
-FROM node:18-bullseye-slim
+FROM node:lts-slim
 
 # Set user to root for installation
 USER root
